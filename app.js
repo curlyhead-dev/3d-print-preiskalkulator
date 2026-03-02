@@ -341,8 +341,109 @@ function hookInputs() {
   }
 
   if (fields.exportPdfBtn) {
-    fields.exportPdfBtn.addEventListener("click", () => window.print());
+    fields.exportPdfBtn.addEventListener("click", () => exportPdf());
   }
+}
+
+function exportPdf() {
+  const state = readState();
+  const r = calc(state);
+  const date = new Date().toLocaleDateString("de-AT", { year: "numeric", month: "2-digit", day: "2-digit" });
+
+  const rows = [
+    ["Material (+Verlust)", eur(r.materialCost)],
+    ["Maschinenzeit", `${eur(r.machineCost)} · ${r.printH.toFixed(2)} h`],
+    ["Wartung", eur(r.maintenanceCost)],
+    ["Strom", eur(r.electricityCost)],
+    ["Rüstkosten (pro Stück)", eur(r.setupCostPerUnit)],
+    ["Design (pro Stück)", `${eur(r.designPerUnit)} · ${state.quantity} Stk`],
+    ["Zwischensumme", eur(r.base)],
+    ["Overhead", `${eur(r.withOverhead - r.base)} · ${Math.max(0, state.overheadPct).toFixed(1)} %`],
+    ["Netto", eur(r.finalNet)],
+    ["USt", `${eur(r.finalGross - r.finalNet)} · ${Math.max(0, state.vatPct).toFixed(1)} %`],
+    ["Brutto", eur(r.finalGross)]
+  ];
+
+  const tableRows = rows
+    .map(([k, v], i) => `<tr class="${i >= rows.length - 3 ? "hl" : ""}"><td>${k}</td><td>${v}</td></tr>`)
+    .join("");
+
+  const logoUrl = `${window.location.origin}${window.location.pathname.replace(/\/[^/]*$/, '/') }assets/logo-drive.png`;
+
+  const html = `<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<title>Angebot – 3D Druck Kalkulation</title>
+<style>
+  @page { size: A4; margin: 12mm; }
+  body { font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:#111; margin:0; }
+  .doc { width:100%; }
+  .head { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10mm; }
+  .logo { height:26px; }
+  h1 { margin:0; font-size:18px; }
+  .muted { color:#666; font-size:12px; }
+  .price { border:1px solid #ddd; border-radius:10px; padding:10px 12px; margin-bottom:8mm; }
+  .price .n { font-size:28px; font-weight:800; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:8mm; }
+  .box { border:1px solid #e5e5e5; border-radius:10px; padding:8px; }
+  .box h2 { margin:0 0 6px 0; font-size:12px; text-transform:uppercase; color:#444; letter-spacing:.05em; }
+  table { width:100%; border-collapse:collapse; font-size:12px; }
+  td { border-bottom:1px solid #f0f0f0; padding:6px 4px; vertical-align:top; }
+  td:last-child { text-align:right; font-weight:600; }
+  tr.hl td { border-bottom:1px solid #d9d9d9; font-weight:700; }
+  .meta p { margin:3px 0; font-size:12px; }
+</style>
+</head>
+<body>
+  <div class="doc">
+    <div class="head">
+      <img class="logo" src="${logoUrl}" alt="Logo" />
+      <div class="muted">Datum: ${date}</div>
+    </div>
+
+    <h1>3D‑Druck Kalkulation</h1>
+    <p class="muted">Stückpreis auf Basis deiner aktuellen Eingaben</p>
+
+    <div class="price">
+      <div class="muted">Stückpreis Netto</div>
+      <div class="n">${eur(r.finalNet)}</div>
+      <div class="muted">Stückpreis Brutto: <strong>${eur(r.finalGross)}</strong></div>
+    </div>
+
+    <div class="grid">
+      <div class="box">
+        <h2>Kostenaufschlüsselung</h2>
+        <table>${tableRows}</table>
+      </div>
+      <div class="box meta">
+        <h2>Parameter</h2>
+        <p>Material: <strong>${state.materialPreset}</strong></p>
+        <p>Materialkosten: <strong>${state.materialEurPerKg} €/kg</strong></p>
+        <p>Gewicht: <strong>${state.weightG} g</strong></p>
+        <p>Druckzeit: <strong>${r.printH.toFixed(2)} h</strong></p>
+        <p>Maschinenrate: <strong>${state.machineEurPerHour} €/h</strong></p>
+        <p>Wartung: <strong>${state.maintenanceEurPerPrintHour} €/h</strong></p>
+        <p>Strom: <strong>${state.electricityEurPerKwh} €/kWh</strong></p>
+        <p>Leistung: <strong>${state.printerPowerW} W</strong></p>
+        <p>Overhead: <strong>${state.overheadPct} %</strong></p>
+        <p>Marge: <strong>${state.profitMarginPct} %</strong></p>
+        <p>USt: <strong>${state.vatPct} %</strong></p>
+        <p>Rundung: <strong>${state.roundingStep} €</strong></p>
+        <p>Stückzahl: <strong>${state.quantity}</strong></p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+
+  const w = window.open("", "_blank", "noopener,noreferrer");
+  if (!w) return;
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+  setTimeout(() => w.print(), 250);
 }
 
 function setFooterDate() {
