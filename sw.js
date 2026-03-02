@@ -1,9 +1,9 @@
-const CACHE_NAME = "tars-3d-calc-v3";
+const CACHE_NAME = "tars-3d-calc-v4";
 const ASSETS = [
   "./",
   "./index.html",
-  "./styles.css",
-  "./app.js",
+  "./styles.v2.css",
+  "./app.v2.js",
   "./manifest.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
@@ -28,6 +28,21 @@ self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
 
+  // Navigation requests: network first (prevents stale HTML/UI)
+  if (req.mode === "navigate") {
+    event.respondWith(
+      fetch(req)
+        .then((res) => {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+          return res;
+        })
+        .catch(() => caches.match(req).then((r) => r || caches.match("./index.html")))
+    );
+    return;
+  }
+
+  // Static assets: cache first
   event.respondWith(
     caches.match(req).then((cached) => {
       if (cached) return cached;
