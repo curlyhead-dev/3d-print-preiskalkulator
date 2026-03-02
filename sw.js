@@ -7,8 +7,7 @@ const ASSETS = [
   "./manifest.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
-  "./assets/logo-mark.jpg",
-  "./assets/logo-full.jpg"
+  "./assets/logo-drive.png"
 ];
 
 self.addEventListener("install", (event) => {
