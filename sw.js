@@ -1,4 +1,4 @@
-const CACHE_NAME = "tars-3d-calc-v2";
+const CACHE_NAME = "tars-3d-calc-v3";
 const ASSETS = [
   "./",
   "./index.html",

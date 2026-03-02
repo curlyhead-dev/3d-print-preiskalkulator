@@ -25,6 +25,7 @@
 
 *{box-sizing:border-box}
 html,body{height:100%}
+html, body { max-width:100%; overflow-x:hidden; }
 body{
   margin:0;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
@@ -200,8 +201,13 @@ input:focus, select:focus{border-color: rgba(124,92,255,.65); box-shadow: 0 0 0 
 }
 
 @media (max-width: 920px){
-  .grid{grid-template-columns: 1fr}
+  .topbar{flex-direction:column;align-items:stretch;padding:16px 14px 10px 14px}
+  .brand{flex-direction:column;align-items:flex-start;gap:8px}
+  .brand-logo{max-width:100%;height:auto}
+
+  .grid{grid-template-columns: 1fr; padding:0 14px 18px 14px}
   .row{grid-template-columns: 1fr}
-  .actions{flex-direction:column;align-items:stretch}
-  .actions .btn{width:100%}
+
+  .actions{display:flex;flex-direction:column;align-items:stretch;gap:8px;width:100%}
+  .actions .btn{width:100%;max-width:100%}
 }
