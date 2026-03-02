@@ -45,6 +45,7 @@ const MATERIAL_PRESETS = {
   PETG: { label: "PETG", eurPerKg: 26.0 },
   ABS:  { label: "ABS",  eurPerKg: 28.0 },
   TPU:  { label: "TPU",  eurPerKg: 35.0 },
+  ASA:  { label: "ASA",  eurPerKg: 30.0 },
   RESIN:{ label: "Resin",eurPerKg: 55.0 }
 };
 

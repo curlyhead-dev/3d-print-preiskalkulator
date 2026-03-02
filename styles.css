@@ -54,7 +54,7 @@ body{
 h1{font-size:18px;margin:0 0 2px 0}
 .subtitle{margin:0;color:var(--muted);font-size:12px}
 
-.actions{display:flex;align-items:center}
+.actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .btn{
   border:1px solid rgba(124,92,255,.35);
   background: linear-gradient(135deg, rgba(124,92,255,.25), rgba(37,194,160,.18));
@@ -168,14 +168,23 @@ input:focus, select:focus{border-color: rgba(124,92,255,.65); box-shadow: 0 0 0 
 .footer-right{font-variant-numeric: tabular-nums}
 
 @media print{
-  body{background:#fff;color:#000}
+  @page{margin:10mm}
+  body{background:#fff;color:#000;font-size:11px}
   .topbar .actions{display:none}
+  .topbar{padding:8px 0}
+  .brand-logo{height:22px}
   .card{box-shadow:none;border:1px solid #ddd}
-  .grid{grid-template-columns:1fr}
+  .card h2{padding:8px 10px;font-size:10px}
+  .form, .result{padding:8px 10px}
+  .big{padding:10px}
+  .line{padding:6px 8px}
+  .grid{grid-template-columns:1fr;gap:10px}
   .footer{display:flex;color:#333}
 }
 
 @media (max-width: 920px){
   .grid{grid-template-columns: 1fr}
   .row{grid-template-columns: 1fr}
+  .actions{flex-direction:column;align-items:stretch}
+  .actions .btn{width:100%}
 }
