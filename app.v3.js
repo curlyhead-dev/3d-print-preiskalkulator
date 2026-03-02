@@ -8,7 +8,6 @@
   - Print time (h): hours + minutes/60 OR totalMinutes/60 (falls angegeben)
   - Materialkosten: (gewicht_g/1000) * (€/kg) * (1 + materialLossPct/100)
   - Maschinenkosten: print_h * maschinenrate_€/h
-  - Wartung: print_h * wartung_€/print-hour (default 1€)
   - Stromkosten: (power_W/1000) * print_h * €/kWh
   - Setup/Rüstkosten: Fixbetrag pro Job / Stückzahl
   - Designkosten pro Stück: (design_h * 70€/h) / stückzahl
@@ -29,7 +28,6 @@ const DEFAULTS = {
   printMinutes: 30,
   printTotalMinutes: 0,
   machineEurPerHour: 1.0,
-  // maintenance removed
   electricityEurPerKwh: 0.30,
   printerPowerW: 120,
   setupCostEur: 10.0,
@@ -62,7 +60,6 @@ const fields = {
   printMinutes: $("printMinutes"),
   printTotalMinutes: $("printTotalMinutes"),
   machineEurPerHour: $("machineEurPerHour"),
-  // maintenance removed
   electricityEurPerKwh: $("electricityEurPerKwh"),
   printerPowerW: $("printerPowerW"),
   setupCostEur: $("setupCostEur"),
@@ -124,8 +121,7 @@ function readState() {
     printMinutes: toNumber(fields.printMinutes.value, 0),
     printTotalMinutes: toNumber(fields.printTotalMinutes.value, 0),
     machineEurPerHour: toNumber(fields.machineEurPerHour.value, 0),
-    // maintenance removed
-    electricityEurPerKwh: toNumber(fields.electricityEurPerKwh.value, 0),
+      electricityEurPerKwh: toNumber(fields.electricityEurPerKwh.value, 0),
     printerPowerW: toNumber(fields.printerPowerW.value, 0),
     setupCostEur: toNumber(fields.setupCostEur.value, 0),
     overheadPct: toNumber(fields.overheadPct.value, 0),
@@ -185,7 +181,6 @@ function applyState(state) {
   fields.printMinutes.value = state.printMinutes ?? DEFAULTS.printMinutes;
   fields.printTotalMinutes.value = state.printTotalMinutes ?? DEFAULTS.printTotalMinutes;
   fields.machineEurPerHour.value = state.machineEurPerHour ?? DEFAULTS.machineEurPerHour;
-  // maintenance removed
   fields.electricityEurPerKwh.value = state.electricityEurPerKwh ?? DEFAULTS.electricityEurPerKwh;
   fields.printerPowerW.value = state.printerPowerW ?? DEFAULTS.printerPowerW;
   fields.setupCostEur.value = state.setupCostEur ?? DEFAULTS.setupCostEur;
@@ -204,8 +199,6 @@ function calc(state) {
   const materialLossFactor = 1 + Math.max(0, state.materialLossPct) / 100;
   const materialCost = weightKg * Math.max(0, state.materialEurPerKg) * materialLossFactor;
   const machineCost = printH * Math.max(0, state.machineEurPerHour);
-  const maintenanceCost = 0;
-
   const powerKw = Math.max(0, state.printerPowerW) / 1000;
   const electricityCost = powerKw * printH * Math.max(0, state.electricityEurPerKwh);
 
@@ -214,7 +207,7 @@ function calc(state) {
   const designTotal = Math.max(0, state.designHours) * DESIGN_RATE_EUR_PER_HOUR;
   const designPerUnit = designTotal / Math.max(1, state.quantity);
 
-  const base = materialCost + machineCost + maintenanceCost + electricityCost + setupCostPerUnit + designPerUnit;
+  const base = materialCost + machineCost + electricityCost + setupCostPerUnit + designPerUnit;
 
   const overheadFactor = 1 + Math.max(0, state.overheadPct) / 100;
   const withOverhead = base * overheadFactor;
@@ -230,7 +223,6 @@ function calc(state) {
     printH,
     materialCost,
     machineCost,
-    maintenanceCost,
     electricityCost,
     setupCostPerUnit,
     designPerUnit,
@@ -255,8 +247,7 @@ function render(state) {
   const lines = [
     ["Material (+Verlust)", eur(r.materialCost)],
     ["Maschinenzeit", `${eur(r.machineCost)}  ·  ${r.printH.toFixed(2)} h`],
-    // maintenance removed
-    ["Strom", eur(r.electricityCost)],
+      ["Strom", eur(r.electricityCost)],
     ["Rüstkosten (pro Stück)", eur(r.setupCostPerUnit)],
     ["Design (pro Stück)", `${eur(r.designPerUnit)}  ·  ${state.quantity} Stk`],
     ["Zwischensumme", eur(r.base), "total"],
@@ -284,8 +275,7 @@ function hookInputs() {
     "printMinutes",
     "printTotalMinutes",
     "machineEurPerHour",
-    // maintenance removed
-    "electricityEurPerKwh",
+      "electricityEurPerKwh",
     "printerPowerW",
     "setupCostEur",
     "overheadPct",
@@ -402,8 +392,7 @@ function exportCsv() {
     ["Materialverlust %", state.materialLossPct],
     ["Druckzeit h", r.printH.toFixed(2)],
     ["Maschinenrate €/h", state.machineEurPerHour],
-    // maintenance removed
-    ["Strom €/kWh", state.electricityEurPerKwh],
+      ["Strom €/kWh", state.electricityEurPerKwh],
     ["Leistung W", state.printerPowerW],
     ["Rüstkosten €/Job", state.setupCostEur],
     ["Stückzahl", state.quantity],
@@ -415,8 +404,7 @@ function exportCsv() {
     ["---", "---"],
     ["Materialkosten", r.materialCost.toFixed(2)],
     ["Maschinenzeit", r.machineCost.toFixed(2)],
-    // maintenance removed
-    ["Strom", r.electricityCost.toFixed(2)],
+      ["Strom", r.electricityCost.toFixed(2)],
     ["Rüstkosten pro Stück", r.setupCostPerUnit.toFixed(2)],
     ["Design pro Stück", r.designPerUnit.toFixed(2)],
     ["Zwischensumme", r.base.toFixed(2)],
