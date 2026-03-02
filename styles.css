@@ -168,18 +168,34 @@ input:focus, select:focus{border-color: rgba(124,92,255,.65); box-shadow: 0 0 0 
 .footer-right{font-variant-numeric: tabular-nums}
 
 @media print{
-  @page{margin:10mm}
-  body{background:#fff;color:#000;font-size:11px}
-  .topbar .actions{display:none}
-  .topbar{padding:8px 0}
-  .brand-logo{height:22px}
-  .card{box-shadow:none;border:1px solid #ddd}
-  .card h2{padding:8px 10px;font-size:10px}
-  .form, .result{padding:8px 10px}
-  .big{padding:10px}
-  .line{padding:6px 8px}
-  .grid{grid-template-columns:1fr;gap:10px}
-  .footer{display:flex;color:#333}
+  @page{size:A4 portrait; margin:8mm}
+
+  body{background:#fff !important; color:#111; font-size:10px}
+
+  /* Nur sauberer PDF-Output */
+  .topbar .actions,
+  .footer,
+  .card:first-child { display:none !important; }
+
+  .topbar{padding:0 0 6px 0; margin:0}
+  .brand-logo{height:20px}
+  h1{font-size:14px; margin:0}
+  .subtitle{font-size:10px; margin:2px 0 0 0}
+
+  .grid{display:block; padding:0; margin:0}
+  .card{box-shadow:none !important; border:1px solid #d9d9d9; border-radius:8px; margin:0}
+  .card h2{padding:8px 10px; font-size:10px; letter-spacing:.04em}
+
+  .result{padding:8px 10px}
+  .big{padding:10px; border-radius:8px}
+  .big .label{font-size:10px}
+  .big .value{font-size:22px}
+
+  .breakdown{margin-top:8px; gap:4px}
+  .line{padding:5px 8px; border-radius:6px}
+  .line .k,.line .v{font-size:10px}
+
+  .footnote{margin-top:8px; font-size:9px; color:#444}
 }
 
 @media (max-width: 920px){
