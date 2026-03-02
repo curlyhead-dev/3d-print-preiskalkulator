@@ -20,14 +20,15 @@
 const DESIGN_RATE_EUR_PER_HOUR = 70;
 
 const DEFAULTS = {
-  materialPreset: "PLA",
-  materialEurPerKg: 22.0,
+  projectName: "",
+  materialPreset: "ASA",
+  materialEurPerKg: 30.0,
   weightG: 120.0,
   materialLossPct: 8.0,
   printHours: 3,
   printMinutes: 30,
   printTotalMinutes: 0,
-  machineEurPerHour: 6.0,
+  machineEurPerHour: 1.0,
   maintenanceEurPerPrintHour: 1.0,
   electricityEurPerKwh: 0.30,
   printerPowerW: 120,
@@ -52,6 +53,7 @@ const MATERIAL_PRESETS = {
 const $ = (id) => document.getElementById(id);
 
 const fields = {
+  projectName: $("projectName"),
   materialPreset: $("materialPreset"),
   materialEurPerKg: $("materialEurPerKg"),
   weightG: $("weightG"),
@@ -80,6 +82,7 @@ const fields = {
   exportCsvBtn: $("exportCsvBtn"),
   exportPdfBtn: $("exportPdfBtn"),
   finalPrice: $("finalPrice"),
+  projectNameDisplay: $("projectNameDisplay"),
   breakdown: $("breakdown")
 };
 
@@ -112,6 +115,7 @@ function hoursFromInputs(h, m, totalMin) {
 
 function readState() {
   return {
+    projectName: fields.projectName.value,
     materialPreset: fields.materialPreset.value,
     materialEurPerKg: toNumber(fields.materialEurPerKg.value, 0),
     weightG: toNumber(fields.weightG.value, 0),
@@ -134,12 +138,12 @@ function readState() {
 }
 
 function saveState(state) {
-  localStorage.setItem("tars_3d_calc_v2", JSON.stringify(state));
+  localStorage.setItem("tars_3d_calc_v3", JSON.stringify(state));
 }
 
 function loadState() {
   try {
-    const raw = localStorage.getItem("tars_3d_calc_v2");
+    const raw = localStorage.getItem("tars_3d_calc_v3");
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== "object") return null;
@@ -172,6 +176,7 @@ function initTheme() {
 }
 
 function applyState(state) {
+  fields.projectName.value = state.projectName ?? DEFAULTS.projectName;
   fields.materialPreset.value = state.materialPreset ?? DEFAULTS.materialPreset;
   fields.materialEurPerKg.value = state.materialEurPerKg ?? DEFAULTS.materialEurPerKg;
   fields.weightG.value = state.weightG ?? DEFAULTS.weightG;
@@ -243,6 +248,9 @@ function render(state) {
   const r = calc(state);
 
   fields.finalPrice.textContent = eur(r.finalNet);
+  if (fields.projectNameDisplay) {
+    fields.projectNameDisplay.textContent = `Projekt: ${state.projectName?.trim() ? state.projectName : "–"}`;
+  }
 
   const lines = [
     ["Material (+Verlust)", eur(r.materialCost)],
@@ -267,6 +275,7 @@ function render(state) {
 
 function hookInputs() {
   const ids = [
+    "projectName",
     "materialPreset",
     "materialEurPerKg",
     "weightG",
@@ -321,7 +330,7 @@ function hookInputs() {
   });
 
   fields.resetBtn.addEventListener("click", () => {
-    localStorage.removeItem("tars_3d_calc_v2");
+    localStorage.removeItem("tars_3d_calc_v3");
     applyState(DEFAULTS);
     saveState(readState());
     render(readState());
@@ -386,6 +395,7 @@ function exportCsv() {
 
   const rows = [
     ["Parameter", "Wert"],
+    ["Projektname", state.projectName || "-"],
     ["Material", state.materialPreset],
     ["Material €/kg", state.materialEurPerKg],
     ["Gewicht g", state.weightG],

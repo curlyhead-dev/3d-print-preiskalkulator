@@ -39,6 +39,13 @@
       <div class="form">
         <div class="row">
           <label>
+            Projektname
+            <input id="projectName" type="text" placeholder="z.B. Focus Ring ASA Batch" />
+          </label>
+        </div>
+
+        <div class="row">
+          <label>
             Material
             <select id="materialPreset">
               <option value="PLA">PLA</option>
@@ -181,6 +188,7 @@
       <h2>Ergebnis</h2>
 
       <div class="result">
+        <div class="hint" id="projectNameDisplay">Projekt: –</div>
         <div class="big">
           <div class="label">Stückpreis (Netto)</div>
           <div class="value" id="finalPrice">–</div>
