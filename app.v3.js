@@ -29,7 +29,7 @@ const DEFAULTS = {
   printMinutes: 30,
   printTotalMinutes: 0,
   machineEurPerHour: 1.0,
-  maintenanceEurPerPrintHour: 1.0,
+  // maintenance removed
   electricityEurPerKwh: 0.30,
   printerPowerW: 120,
   setupCostEur: 10.0,
@@ -62,7 +62,7 @@ const fields = {
   printMinutes: $("printMinutes"),
   printTotalMinutes: $("printTotalMinutes"),
   machineEurPerHour: $("machineEurPerHour"),
-  maintenanceEurPerPrintHour: $("maintenanceEurPerPrintHour"),
+  // maintenance removed
   electricityEurPerKwh: $("electricityEurPerKwh"),
   printerPowerW: $("printerPowerW"),
   setupCostEur: $("setupCostEur"),
@@ -124,7 +124,7 @@ function readState() {
     printMinutes: toNumber(fields.printMinutes.value, 0),
     printTotalMinutes: toNumber(fields.printTotalMinutes.value, 0),
     machineEurPerHour: toNumber(fields.machineEurPerHour.value, 0),
-    maintenanceEurPerPrintHour: toNumber(fields.maintenanceEurPerPrintHour.value, 0),
+    // maintenance removed
     electricityEurPerKwh: toNumber(fields.electricityEurPerKwh.value, 0),
     printerPowerW: toNumber(fields.printerPowerW.value, 0),
     setupCostEur: toNumber(fields.setupCostEur.value, 0),
@@ -185,7 +185,7 @@ function applyState(state) {
   fields.printMinutes.value = state.printMinutes ?? DEFAULTS.printMinutes;
   fields.printTotalMinutes.value = state.printTotalMinutes ?? DEFAULTS.printTotalMinutes;
   fields.machineEurPerHour.value = state.machineEurPerHour ?? DEFAULTS.machineEurPerHour;
-  fields.maintenanceEurPerPrintHour.value = state.maintenanceEurPerPrintHour ?? DEFAULTS.maintenanceEurPerPrintHour;
+  // maintenance removed
   fields.electricityEurPerKwh.value = state.electricityEurPerKwh ?? DEFAULTS.electricityEurPerKwh;
   fields.printerPowerW.value = state.printerPowerW ?? DEFAULTS.printerPowerW;
   fields.setupCostEur.value = state.setupCostEur ?? DEFAULTS.setupCostEur;
@@ -204,7 +204,7 @@ function calc(state) {
   const materialLossFactor = 1 + Math.max(0, state.materialLossPct) / 100;
   const materialCost = weightKg * Math.max(0, state.materialEurPerKg) * materialLossFactor;
   const machineCost = printH * Math.max(0, state.machineEurPerHour);
-  const maintenanceCost = printH * Math.max(0, state.maintenanceEurPerPrintHour);
+  const maintenanceCost = 0;
 
   const powerKw = Math.max(0, state.printerPowerW) / 1000;
   const electricityCost = powerKw * printH * Math.max(0, state.electricityEurPerKwh);
@@ -255,7 +255,7 @@ function render(state) {
   const lines = [
     ["Material (+Verlust)", eur(r.materialCost)],
     ["Maschinenzeit", `${eur(r.machineCost)}  ·  ${r.printH.toFixed(2)} h`],
-    ["Wartung", eur(r.maintenanceCost)],
+    // maintenance removed
     ["Strom", eur(r.electricityCost)],
     ["Rüstkosten (pro Stück)", eur(r.setupCostPerUnit)],
     ["Design (pro Stück)", `${eur(r.designPerUnit)}  ·  ${state.quantity} Stk`],
@@ -284,7 +284,7 @@ function hookInputs() {
     "printMinutes",
     "printTotalMinutes",
     "machineEurPerHour",
-    "maintenanceEurPerPrintHour",
+    // maintenance removed
     "electricityEurPerKwh",
     "printerPowerW",
     "setupCostEur",
@@ -402,7 +402,7 @@ function exportCsv() {
     ["Materialverlust %", state.materialLossPct],
     ["Druckzeit h", r.printH.toFixed(2)],
     ["Maschinenrate €/h", state.machineEurPerHour],
-    ["Wartung €/h", state.maintenanceEurPerPrintHour],
+    // maintenance removed
     ["Strom €/kWh", state.electricityEurPerKwh],
     ["Leistung W", state.printerPowerW],
     ["Rüstkosten €/Job", state.setupCostEur],
@@ -415,7 +415,7 @@ function exportCsv() {
     ["---", "---"],
     ["Materialkosten", r.materialCost.toFixed(2)],
     ["Maschinenzeit", r.machineCost.toFixed(2)],
-    ["Wartung", r.maintenanceCost.toFixed(2)],
+    // maintenance removed
     ["Strom", r.electricityCost.toFixed(2)],
     ["Rüstkosten pro Stück", r.setupCostPerUnit.toFixed(2)],
     ["Design pro Stück", r.designPerUnit.toFixed(2)],
