@@ -1,9 +1,9 @@
-const CACHE_NAME = "tars-3d-calc-v5";
+const CACHE_NAME = "tars-3d-calc-v6";
 const ASSETS = [
   "./",
   "./index.html",
-  "./styles.v3.css",
-  "./app.v3.js",
+  "./styles.v4.css",
+  "./app.v4.js",
   "./manifest.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
