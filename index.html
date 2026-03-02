@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>3D‑Druck Preiskalkulator</title>
+
+  <!-- PWA / iOS "Home Screen" -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img class="brand-logo" src="assets/logo-full.jpg" alt="Curlyhead Media" />
+      <div>
+        <h1>3D‑Druck Preiskalkulator</h1>
+        <p class="subtitle">Stückpreis inkl. Breakdown · Offline (PWA) · Werte werden gespeichert</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="themeToggle" class="btn ghost" type="button">Light</button>
+      <button id="offerPresetBtn" class="btn" type="button">Angebotspreis (25%)</button>
+      <button id="exportCsvBtn" class="btn ghost" type="button">CSV Export</button>
+      <button id="exportPdfBtn" class="btn ghost" type="button">PDF Export</button>
+      <button id="resetBtn" class="btn ghost" type="button">Reset</button>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="card">
+      <h2>Eingaben</h2>
+
+      <div class="form">
+        <div class="row">
+          <label>
+            Material
+            <select id="materialPreset">
+              <option value="PLA">PLA</option>
+              <option value="PETG">PETG</option>
+              <option value="ABS">ABS</option>
+              <option value="TPU">TPU</option>
+              <option value="RESIN">Resin</option>
+            </select>
+          </label>
+
+          <label>
+            Materialkosten (€/kg)
+            <input id="materialEurPerKg" type="number" min="0" step="0.01" inputmode="decimal" />
+          </label>
+        </div>
+
+        <div class="row">
+          <label>
+            Gewicht (g)
+            <input id="weightG" type="number" min="0" step="0.1" inputmode="decimal" />
+          </label>
+
+          <label>
+            Materialverlust (%)
+            <input id="materialLossPct" type="number" min="0" step="0.1" inputmode="decimal" />
+          </label>
+        </div>
+
+        <div class="row">
+          <label>
+            Druckzeit
+            <div class="inline">
+              <input id="printHours" type="number" min="0" step="1" inputmode="numeric" />
+              <span class="unit">h</span>
+              <input id="printMinutes" type="number" min="0" max="59" step="1" inputmode="numeric" />
+              <span class="unit">min</span>
+            </div>
+          </label>
+
+          <label>
+            Druckzeit gesamt (Min.)
+            <input id="printTotalMinutes" type="number" min="0" step="1" inputmode="numeric" />
+          </label>
+        </div>
+
+        <div class="row">
+          <label>
+            Maschinenrate (€/h)
+            <input id="machineEurPerHour" type="number" min="0" step="0.01" inputmode="decimal" />
+          </label>
+
+          <label>
+            Wartung (€/Druckstunde)
+            <input id="maintenanceEurPerPrintHour" type="number" min="0" step="0.01" inputmode="decimal" />
+          </label>
+        </div>
+
+        <div class="row">
+          <label>
+            Strompreis (€/kWh)
+            <input id="electricityEurPerKwh" type="number" min="0" step="0.01" inputmode="decimal" />
+          </label>
+
+          <label>
+            Druckerleistung (W)
+            <input id="printerPowerW" type="number" min="0" step="1" inputmode="numeric" />
+          </label>
+        </div>
+
+        <div class="row">
+          <label>
+            Rüstkosten pauschal (€ / Job)
+            <input id="setupCostEur" type="number" min="0" step="0.01" inputmode="decimal" />
+          </label>
+
+          <label>
+            Ausschuss/Overhead (%)
+            <input id="overheadPct" type="number" min="0" step="0.1" inputmode="decimal" />
+          </label>
+        </div>
+
+        <div class="row">
+          <label>
+            Gewinnmarge (%)
+            <input id="profitMarginPct" type="number" min="0" step="0.1" inputmode="decimal" />
+          </label>
+
+          <label>
+            USt / VAT (%)
+            <input id="vatPct" type="number" min="0" step="0.1" inputmode="decimal" />
+          </label>
+        </div>
+
+        <div class="row">
+          <label>
+            Rundung (€/Schritt)
+            <input id="roundingStep" type="number" min="0" step="0.01" inputmode="decimal" />
+          </label>
+        </div>
+
+        <hr class="sep" />
+
+        <div class="row">
+          <label>
+            Designzeit (h)
+            <input id="designHours" type="number" min="0" step="0.1" inputmode="decimal" />
+          </label>
+
+          <label>
+            Erwartete Stückzahl
+            <input id="quantity" type="number" min="1" step="1" inputmode="numeric" />
+          </label>
+        </div>
+
+        <p class="hint">
+          Designrate ist fix: <strong>70 €/h</strong>. Designkosten werden auf die Stückzahl verteilt.
+        </p>
+
+        <hr class="sep" />
+
+        <div class="row">
+          <label>
+            Profilname
+            <input id="profileName" type="text" placeholder="z.B. Bambu PLA" />
+          </label>
+          <label>
+            Gespeicherte Profile
+            <select id="profileSelect"></select>
+          </label>
+        </div>
+        <div class="row">
+          <button id="saveProfileBtn" class="btn" type="button">Profil speichern</button>
+          <button id="deleteProfileBtn" class="btn ghost" type="button">Profil löschen</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Ergebnis</h2>
+
+      <div class="result">
+        <div class="big">
+          <div class="label">Stückpreis (Netto)</div>
+          <div class="value" id="finalPrice">–</div>
+        </div>
+
+        <div class="breakdown" id="breakdown"></div>
+
+        <div class="footnote">
+          <span>Hinweis:</span> Overhead (%) erhöht die Kostenbasis (Ausschuss/Fehldrucke). Gewinnmarge (%) wird danach aufgeschlagen. Rüstkosten werden auf die Stückzahl verteilt.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-left">
+      <img class="footer-logo" src="assets/logo-mark.jpg" alt="Curlyhead Media" />
+      <span>Offline‑fähig via Service Worker · Lokal speichernde Eingaben · Kein Tracking</span>
+    </div>
+    <div class="footer-right" id="footerDate"></div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
